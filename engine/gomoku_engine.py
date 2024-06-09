@@ -59,7 +59,7 @@ class GomokuEngine:
                 should_end = True
                 for number_of in range(1, 5):
                     if (number_of+rowIndex >= self.board_size
-                            or number_of-columnIndex < 0
+                            or columnIndex-number_of < 0
                             or self.board[rowIndex+number_of][columnIndex-number_of] != cell):
                         should_end = False
                         break
@@ -70,12 +70,12 @@ class GomokuEngine:
     # Returns which players turn is next
     def apply_strategy(self, player_strategy: Strategy, player_index: int) -> int:
         if self.has_swap_query_occurred and self.has_start_position_been_set:
-            move_y, move_x = player_strategy.get_next_move(board=self.board)
+            move_x, move_y = player_strategy.get_next_move(board=self.board)
             if player_index != 1 and player_index != 2:
                 raise "Unknown player index"
-            if self.board[move_x][move_y] != "":
-                raise "Place on board already taken"
-            self.board[move_x][move_y] = self.player_1_color if player_index == 1 else self.player_2_color
+            if self.board[move_y][move_x] != "":
+                raise ValueError("Place on board already taken")
+            self.board[move_y][move_x] = self.player_1_color if player_index == 1 else self.player_2_color
         elif not self.has_start_position_been_set:
             self.has_start_position_been_set = True
             self.board = player_strategy.get_start_swap_position(self.board)
