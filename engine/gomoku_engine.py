@@ -1,5 +1,6 @@
 from strategy import Strategy
 from strategy import HumanStrategy
+from strategy.mcts_rave import MCTSStrategyRAVE
 from strategy.mcts_strategy import MCTSStrategy
 from strategy.mcts_strategy2 import MCTSStrategyDawcio
 
@@ -129,7 +130,7 @@ if __name__ == "__main__":
             active_player = engine.apply_strategy(HumanStrategy((y, x), None, None), active_player)
         else:
             # Let the MCTS algorithm choose a move
-            active_player = engine.apply_strategy(MCTSStrategyDawcio(active_player, engine.get_current_board()), active_player)
+            active_player = engine.apply_strategy(MCTSStrategyRAVE(active_player, engine.get_current_board()), active_player)
         print()
         engine.print_board()
 
