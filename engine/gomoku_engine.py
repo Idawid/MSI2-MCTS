@@ -1,5 +1,6 @@
 from strategy import Strategy
 from strategy import HumanStrategy
+from strategy.mcts_strategy import MCTSStrategy
 
 
 class GomokuEngine:
@@ -32,7 +33,7 @@ class GomokuEngine:
                 # Check horizontal
                 should_end = True
                 for number_of in range(1, 5):
-                    if number_of+columnIndex >= self.board_size or self.board[rowIndex][columnIndex+number_of] != cell:
+                    if number_of+columnIndex >= len(self.board) or self.board[rowIndex][columnIndex+number_of] != cell:
                         should_end = False
                         break
                 if should_end:
@@ -40,7 +41,7 @@ class GomokuEngine:
                 # Check vertical
                 should_end = True
                 for number_of in range(1, 5):
-                    if number_of+rowIndex >= self.board_size or self.board[rowIndex+number_of][columnIndex] != cell:
+                    if number_of+rowIndex >= len(self.board) or self.board[rowIndex+number_of][columnIndex] != cell:
                         should_end = False
                         break
                 if should_end:
@@ -48,8 +49,8 @@ class GomokuEngine:
                 # Check diagonal from NW to SE
                 should_end = True
                 for number_of in range(1, 5):
-                    if (number_of+rowIndex >= self.board_size
-                            or number_of+columnIndex >= self.board_size
+                    if (number_of+rowIndex >= len(self.board)
+                            or number_of+columnIndex >= len(self.board)
                             or self.board[rowIndex+number_of][columnIndex+number_of] != cell):
                         should_end = False
                         break
@@ -58,7 +59,7 @@ class GomokuEngine:
                 # Check diagonal from NE to SW
                 should_end = True
                 for number_of in range(1, 5):
-                    if (number_of+rowIndex >= self.board_size
+                    if (number_of+rowIndex >= len(self.board)
                             or columnIndex-number_of < 0
                             or self.board[rowIndex+number_of][columnIndex-number_of] != cell):
                         should_end = False
@@ -102,21 +103,34 @@ class GomokuEngine:
 
 # For manual tests purposes
 if __name__ == "__main__":
-    engine = GomokuEngine()
+    board_size = 5
+    engine = GomokuEngine(board_size=board_size)
 
     active_player = 1
     non_active_player = 2
-    board_size = 9
     start_board = [["" for _ in range(board_size)] for _ in range(board_size)]
-    start_board[3][4] = "white"
-    start_board[3][3] = "black"
-    start_board[4][4] = "white"
+    # start_board[3][4] = "white"
+    # start_board[3][3] = "black"
+    # start_board[4][4] = "white"
     engine.apply_strategy(HumanStrategy(None, start_board, False), active_player)
     active_player = engine.apply_strategy(HumanStrategy(None, start_board, False), non_active_player)
-    engine.print_board()
+    # engine.print_board()
+    # while engine.has_game_ended() == 0:
+    #     x, y = map(int, input(f"Enter where Player {active_player} wants to move: ").split())
+    #     active_player = engine.apply_strategy(HumanStrategy((x, y), None, None), active_player)
+    #     engine.print_board()
+
     while engine.has_game_ended() == 0:
-        x, y = map(int, input(f"Enter where Player {active_player} wants to move: ").split())
-        active_player = engine.apply_strategy(HumanStrategy((x, y), None, None), active_player)
+        if active_player == 1:
+            x, y = map(int, input(f"Enter where Player {active_player} wants to move: ").split())
+            x -= 1
+            y -= 1
+            active_player = engine.apply_strategy(HumanStrategy((y, x), None, None), active_player)
+        else:
+            # Let the MCTS algorithm choose a move
+            active_player = engine.apply_strategy(MCTSStrategy(None, engine.get_current_board(), None), active_player)
+        print()
         engine.print_board()
+
     print(f"Player {engine.has_game_ended()} won!")
 
