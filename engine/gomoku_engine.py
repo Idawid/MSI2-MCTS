@@ -84,7 +84,7 @@ class GomokuEngine:
             if not player_strategy.choose_starting_color(self.board):
                 print(f"Player {player_index} choose black")
                 return player_index
-            self.player_1_color, self.player_2_color = self.player_2_color, self.player_2_color
+            self.player_1_color, self.player_2_color = self.player_2_color, self.player_1_color
             print(f"Player {player_index} choose white")
         return 1 if player_index == 2 else 2
 
