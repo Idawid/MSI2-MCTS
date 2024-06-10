@@ -7,16 +7,16 @@ from strategy.mcts_strategy2 import MCTSStrategyDawcio
 
 class GomokuEngine:
     # 0 if nothing, 1 if player 1, 2 if player 2
-    board = []
-    board_size = 11
-    has_start_position_been_set = False
-    has_swap_query_occurred = False
-    player_1_color = "white"
-    player_2_color = "black"
+
 
     def __init__(self, board_size=11):
         self.board = [["" for _ in range(board_size)] for _ in range(board_size)]
         self.board_size = board_size
+        self.last_move = None
+        self.has_start_position_been_set = False
+        self.has_swap_query_occurred = False
+        self.player_1_color = "white"
+        self.player_2_color = "black"
 
     def get_current_board(self):
         return self.board
@@ -25,6 +25,8 @@ class GomokuEngine:
         winning_color = self.has_color_won()
         if winning_color == "":
             return 0
+        if winning_color == "-1":
+            return -1
         return 1 if self.has_color_won()==self.player_1_color else 2
 
     def has_color_won(self):
@@ -68,17 +70,26 @@ class GomokuEngine:
                         break
                 if should_end:
                     return cell
+
+        count = 0
+        for i in self.board:
+            for j in i:
+                if j == "":
+                    count += 1
+        if count == 0:
+            return "-1"
         return ""
 
     # Returns which players turn is next
     def apply_strategy(self, player_strategy: Strategy, player_index: int) -> int:
         if self.has_swap_query_occurred and self.has_start_position_been_set:
-            move_x, move_y = player_strategy.get_next_move(board=self.board)
+            move_x, move_y = player_strategy.get_next_move(self.board, self.last_move)
             if player_index != 1 and player_index != 2:
                 raise "Unknown player index"
             if self.board[move_y][move_x] != "":
-                raise ValueError("Place on board already taken")
+                raise ValueError(f"Place {move_x}, {move_y} on board already taken")
             self.board[move_y][move_x] = self.player_1_color if player_index == 1 else self.player_2_color
+            self.last_move = (move_y, move_x)
         elif not self.has_start_position_been_set:
             self.has_start_position_been_set = True
             self.board = player_strategy.get_start_swap_position(self.board)
@@ -106,14 +117,12 @@ class GomokuEngine:
 # For manual tests purposes
 if __name__ == "__main__":
     board_size = 5
-    engine = GomokuEngine(board_size=board_size)
+    engine = GomokuEngine(board_size)
 
     active_player = 1
     non_active_player = 2
+
     start_board = [["" for _ in range(board_size)] for _ in range(board_size)]
-    # start_board[3][4] = "white"
-    # start_board[3][3] = "black"
-    # start_board[4][4] = "white"
     engine.apply_strategy(HumanStrategy(None, start_board, False), active_player)
     active_player = engine.apply_strategy(HumanStrategy(None, start_board, False), non_active_player)
     # engine.print_board()

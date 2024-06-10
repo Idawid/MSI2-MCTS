@@ -10,8 +10,8 @@ class MCTSStrategyDawcio(Strategy):
         self.player_id = player_id
         self.choose_white = choose_white
 
-    def get_next_move(self, board) -> (int, int):
-        player2 = mctsTwo(player_id=self.player_id, iterations=100)
+    def get_next_move(self, board, last_move:(int, int)) -> (int, int):
+        player2 = mctsTwo(player_id=self.player_id, iterations=1000)
         move = player2.get_move(Board.from_2d_matrix(board))
         return move[1], move[0]
 

@@ -10,7 +10,7 @@ class MCTSStrategyRAVE(Strategy):
         self.player_id = player_id
         self.choose_white = choose_white
 
-    def get_next_move(self, board) -> (int, int):
+    def get_next_move(self, board, s:(int, int)) -> (int, int):
         player2 = mctsRAVE(player_id=self.player_id, iterations=100)
         move = player2.get_move(Board.from_2d_matrix(board))
         return move[1], move[0]

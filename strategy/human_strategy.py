@@ -11,7 +11,7 @@ class HumanStrategy(Strategy):
         self.start_board = start_board
         self.choose_white = choose_white
 
-    def get_next_move(self, board) -> (int, int):
+    def get_next_move(self, board, enemy_move: (int, int)) -> (int, int):
         return self.next_move
 
     def get_start_swap_position(self, board):

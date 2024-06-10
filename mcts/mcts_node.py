@@ -3,7 +3,7 @@ from collections import defaultdict
 
 
 class MonteCarloTreeSearchNode:
-    def __init__(self, state, parent=None, parent_action=None):
+    def __init__(self, state, sim_no, parent=None, parent_action=None):
         self.state = state
         self.parent = parent
         self.parent_action = parent_action
@@ -13,6 +13,7 @@ class MonteCarloTreeSearchNode:
         self._results[1] = 0
         self._results[-1] = 0
         self._untried_actions = self.untried_actions()
+        self.sim_no = sim_no
 
     def untried_actions(self) -> list:
         self._untried_actions = self.state.get_legal_actions()
@@ -30,7 +31,7 @@ class MonteCarloTreeSearchNode:
         action = self._untried_actions.pop()
         next_state = self.state.move(action)
         child_node = MonteCarloTreeSearchNode(
-            next_state, parent=self, parent_action=action)
+            next_state, parent=self, parent_action=action, sim_no=self.sim_no)
         self.children.append(child_node)
         return child_node
 
@@ -71,12 +72,12 @@ class MonteCarloTreeSearchNode:
         return current_node
 
     def best_action(self) -> 'MonteCarloTreeSearchNode':
-        simulation_no = 100
+        simulation_no = self.sim_no
         for i in range(simulation_no):
             v = self._tree_policy()
             reward = v.rollout()
             v.backpropagate(reward)
-        return self.best_child(c_param=0.1)
+        return self.best_child(c_param=0.6)
 
 
 class State:

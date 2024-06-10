@@ -3,18 +3,18 @@ from strategy import Strategy
 
 
 class MCTSStrategy(Strategy):
-    next_move = (None, None)
-    start_board = None
-    choose_white = None
 
-    def __init__(self, next_move, start_board, choose_white = True):
-        self.next_move = next_move
-        self.start_board = start_board
+    def __init__(self, board_size, choose_white=True, sim_no=100):
+        self.start_board = [["" for _ in range(board_size)] for _ in range(board_size)]
+        self.start_board[0][0] = "white"
+        self.start_board[0][1] = "white"
+        self.start_board[1][1] = "black"
         self.choose_white = choose_white
+        self.sim_no = sim_no
 
-    def get_next_move(self, board) -> (int, int):
+    def get_next_move(self, board, last_move: (int, int)) -> (int, int):
         state = State(board)
-        mcts_root = MonteCarloTreeSearchNode(state)
+        mcts_root = MonteCarloTreeSearchNode(state, sim_no=self.sim_no)
         selected_node = mcts_root.best_action()
 
         action = selected_node.parent_action

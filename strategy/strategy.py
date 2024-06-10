@@ -1,5 +1,5 @@
 class Strategy:
-    def get_next_move(self, board) -> (int, int):
+    def get_next_move(self, board, enemy_move: (int, int)) -> (int, int):
         pass
 
     def get_start_swap_position(self, board):
